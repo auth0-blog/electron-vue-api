@@ -1,8 +1,5 @@
 // ./src/index.js
 
-// loading env variables
-require('dotenv').config();
-
 //importing the dependencies
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -12,8 +9,6 @@ const morgan = require('morgan');
 const {startDatabase} = require('./database/mongo');
 const {insertTodo, getTodos} = require('./database/todos');
 const {deleteTodo, updateTodo} = require('./database/todos');
-const jwt = require('express-jwt');
-const jwksRsa = require('jwks-rsa');
 
 // defining the Express app
 const app = express();
@@ -26,22 +21,6 @@ app.use(cors());
 
 // adding morgan to log HTTP requests
 app.use(morgan('combined'));
-
-const checkJwt = jwt({
-  secret: jwksRsa.expressJwtSecret({
-    cache: true,
-    rateLimit: true,
-    jwksRequestsPerMinute: 5,
-    jwksUri: `https://${process.env.AUTH0_DOMAIN}/.well-known/jwks.json`
-  }),
-
-  // Validate the audience and the issuer.
-  audience: process.env.AUTH0_API_IDENTIFIER,
-  issuer: `https://${process.env.AUTH0_DOMAIN}/`,
-  algorithms: ['RS256']
-});
-
-app.use(checkJwt);
 
 // using bodyParser to parse JSON bodies into JS objects
 app.use(bodyParser.json());
