@@ -4,11 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Bruno Krebs",
+  "license": "MIT",
   "dependencies": {
     "body-parser": "^1.18.3",
     "cors": "^2.8.5",
