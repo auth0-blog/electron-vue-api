@@ -1,0 +1,81 @@
+// ./src/index.js
+
+// loading env variables
+require('dotenv').config();
+
+//importing the dependencies
+const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const helmet = require('helmet');
+const morgan = require('morgan');
+const {startDatabase} = require('./database/mongo');
+const {insertTodo, getTodos} = require('./database/todos');
+const {deleteTodo, updateTodo} = require('./database/todos');
+const jwt = require('express-jwt');
+const jwksRsa = require('jwks-rsa');
+
+// defining the Express app
+const app = express();
+
+// adding Helmet to enhance your API's security
+app.use(helmet());
+
+// enabling CORS for all requests (not very secure)
+app.use(cors());
+
+// adding morgan to log HTTP requests
+app.use(morgan('combined'));
+
+const checkJwt = jwt({
+  secret: jwksRsa.expressJwtSecret({
+    cache: true,
+    rateLimit: true,
+    jwksRequestsPerMinute: 5,
+    jwksUri: `https://${process.env.AUTH0_DOMAIN}/.well-known/jwks.json`
+  }),
+
+  // Validate the audience and the issuer.
+  audience: process.env.AUTH0_API_IDENTIFIER,
+  issuer: `https://${process.env.AUTH0_DOMAIN}/`,
+  algorithms: ['RS256']
+});
+
+app.use(checkJwt);
+
+// using bodyParser to parse JSON bodies into JS objects
+app.use(bodyParser.json());
+
+// endpoint to return all todos
+app.get('/', async (req, res) => {
+  res.send(await getTodos());
+});
+
+app.post('/', async (req, res) => {
+  const newTodo = req.body;
+  await insertTodo(newTodo);
+  res.send({ message: 'New todo inserted.' });
+});
+
+// endpoint to delete an todo
+app.delete('/:id', async (req, res) => {
+  await deleteTodo(req.params.id);
+  res.send({ message: 'Todo removed.' });
+});
+
+// endpoint to update an todo
+app.put('/:id', async (req, res) => {
+  const updatedTodo = req.body;
+  await updateTodo(req.params.id, updatedTodo);
+  res.send({ message: 'Todo updated.' });
+});
+
+// start the in-memory MongoDB instance
+startDatabase().then(async () => {
+  await insertTodo({title: 'Hello, now from the in-memory database!'});
+
+  // start the server
+  app.listen(3001, async () => {
+    console.log('listening on port 3001');
+  });
+});
