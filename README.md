@@ -1,5 +1,5 @@
-# Node.js and Express Tutorial: Building and Securing RESTful APIs
+# Electron Tutorial: Building Modern Desktop Apps with Vue.js
 
-In this article, you will learn how to develop RESTful APIs with Node.js, Express, and Auth0. You will start from scratch, scaffolding a new Node.js project, then you will go through all the steps needed to build a secure API.
+In this article, you will learn how to build and secure modern desktop applications with Electron and Vue.js
 
-Read more at: https://auth0.com/blog/node-js-and-express-tutorial-building-and-securing-restful-apis/
+Read more at: https://auth0.com/blog/electron-tutorial-building-modern-desktop-apps-with-vue-js/
